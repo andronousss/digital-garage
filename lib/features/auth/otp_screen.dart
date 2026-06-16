@@ -41,19 +41,19 @@ class OtpScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Код отправлен на номер\n+7 701 *** 45 67',
+                'Код отправлен на номер\n+7 767 *** 67 67',
                 style: AppTextStyles.body.copyWith(color: AppColors.muted),
               ),
               const SizedBox(height: 32),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _OtpBox(value: '4', filled: true),
-                  _OtpBox(value: '8', filled: true),
-                  _OtpBox(value: '2', filled: true),
-                  _OtpBox(value: '', focused: true),
-                  _OtpBox(value: ''),
-                  _OtpBox(value: ''),
+                  _OtpBox(),
+                  _OtpBox(),
+                  _OtpBox(),
+                  _OtpBox(),
+                  _OtpBox(),
+                  _OtpBox(),
                 ],
               ),
               const SizedBox(height: 40),
@@ -95,31 +95,35 @@ class OtpScreen extends StatelessWidget {
 }
 
 class _OtpBox extends StatelessWidget {
-  const _OtpBox({required this.value, this.filled = false, this.focused = false});
-  final String value;
-  final bool filled;
-  final bool focused;
+  const _OtpBox({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 48,
       height: 56,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: focused ? AppColors.primary : AppColors.line,
-          width: focused ? 1.5 : 1.0,
-        ),
-      ),
-      child: Text(
-        value,
+      child: TextField(
+        textAlign: TextAlign.center,
+        keyboardType: TextInputType.number,
+        maxLength: 1,
         style: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w700,
           color: AppColors.text,
+        ),
+        decoration: InputDecoration(
+          counterText: '',
+          contentPadding: EdgeInsets.zero,
+          filled: true,
+          fillColor: AppColors.card,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: AppColors.line),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          ),
         ),
       ),
     );

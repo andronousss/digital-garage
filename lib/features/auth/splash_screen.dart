@@ -10,8 +10,10 @@ class SplashScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.card,
       body: SafeArea(
-        child: Column(
-          children: [
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            children: [
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -67,6 +69,7 @@ class SplashScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

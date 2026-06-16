@@ -53,7 +53,6 @@ class LoginScreen extends StatelessWidget {
                             AuthTextField(
                               label: 'Логин',
                               hintText: 'Введите логин или ID',
-                              initialValue: hasError ? 'dispatcher_01' : null,
                               hasError: hasError,
                               errorText: 'Неверный логин',
                             ),
@@ -61,7 +60,6 @@ class LoginScreen extends StatelessWidget {
                             AuthTextField(
                               label: 'Пароль',
                               hintText: 'Введите пароль',
-                              initialValue: hasError ? 'wrongpass' : null,
                               obscureText: true,
                               hasError: hasError,
                               errorText: 'Неверный пароль',

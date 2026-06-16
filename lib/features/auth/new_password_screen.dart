@@ -54,8 +54,8 @@ class NewPasswordScreen extends StatelessWidget {
                   children: [
                     const AuthTextField(
                       label: 'Новый пароль',
-                      initialValue: 'Fleet2026!',
-                      obscureText: false,
+                      hintText: 'Введите пароль',
+                      obscureText: true,
                       suffixIcon: Icon(Icons.remove_red_eye_outlined, color: AppColors.muted),
                     ),
                     const SizedBox(height: 16),
@@ -67,7 +67,7 @@ class NewPasswordScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     const AuthTextField(
                       label: 'Повторите пароль',
-                      initialValue: '........',
+                      hintText: 'Повторите пароль',
                       obscureText: true,
                     ),
                     const SizedBox(height: 24),
