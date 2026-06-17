@@ -6,6 +6,7 @@ import 'package:digital_garage/shared/widgets/status_chip.dart';
 import 'package:flutter/material.dart';
 
 import 'dispatcher_home_screen.dart';
+import 'notifications_screen.dart';
 
 class ShiftsScreen extends StatelessWidget {
   const ShiftsScreen({super.key});
@@ -15,15 +16,13 @@ class ShiftsScreen extends StatelessWidget {
     return RoleScaffold(
       userName: 'Руслан Омаров',
       roleName: 'Диспетчер',
-      bottomNavigationBar: RoleBottomNav(
-        items: dispatcherNavItems,
-        currentIndex: 1,
-        onChanged: (index) {
-          if (index != 1) {
-            navigateDispatcherTab(context, index);
-          }
-        },
-      ),
+      onNotificationTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+        );
+      },
+
       body: Column(
         children: [
           Padding(

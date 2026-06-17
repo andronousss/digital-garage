@@ -10,6 +10,7 @@ import 'board_status_screen.dart';
 import 'profile_screen.dart';
 import 'shifts_screen.dart';
 import 'notifications_screen.dart';
+import 'waybills_screen.dart';
 
 const dispatcherNavItems = [
   RoleBottomNavItem(icon: Icons.home, label: 'Главная'),
@@ -25,7 +26,7 @@ void navigateDispatcherTab(BuildContext context, int index) {
       target = const DispatcherHomeScreen();
       break;
     case 1:
-      target = const ShiftsScreen();
+      target = const WaybillsScreen();
       break;
     case 2:
       target = const BoardStatusScreen();
@@ -54,6 +55,12 @@ class DispatcherHomeScreen extends StatelessWidget {
     return RoleScaffold(
       userName: 'Руслан Омаров',
       roleName: 'Диспетчер',
+      onNotificationTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+        );
+      },
       bottomNavigationBar: RoleBottomNav(
         items: dispatcherNavItems,
         currentIndex: 0,
@@ -115,7 +122,15 @@ class DispatcherHomeScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 32),
-            _SectionHeader(title: 'Активные смены', onSeeAll: () => navigateDispatcherTab(context, 1)),
+            _SectionHeader(
+              title: 'Активные смены',
+              onSeeAll: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ShiftsScreen()),
+                );
+              },
+            ),
             const SizedBox(height: 12),
             AppCard(
               padding: const EdgeInsets.all(16),

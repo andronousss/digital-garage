@@ -7,6 +7,7 @@ import 'package:digital_garage/shared/widgets/status_chip.dart';
 import 'package:flutter/material.dart';
 
 import 'dispatcher_home_screen.dart';
+import 'notifications_screen.dart';
 
 class BoardStatusScreen extends StatelessWidget {
   const BoardStatusScreen({super.key});
@@ -16,6 +17,12 @@ class BoardStatusScreen extends StatelessWidget {
     return RoleScaffold(
       userName: 'Руслан Омаров',
       roleName: 'Диспетчер',
+      onNotificationTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+        );
+      },
       bottomNavigationBar: RoleBottomNav(
         items: dispatcherNavItems,
         currentIndex: 2,

@@ -1,10 +1,12 @@
 import 'package:digital_garage/core/theme/app_colors.dart';
 import 'package:digital_garage/core/theme/app_text_styles.dart';
+import 'package:digital_garage/features/auth/login_screen.dart';
 import 'package:digital_garage/shared/widgets/role_bottom_nav.dart';
 import 'package:digital_garage/shared/widgets/role_scaffold.dart';
 import 'package:flutter/material.dart';
 
 import 'dispatcher_home_screen.dart';
+import 'notifications_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -14,6 +16,12 @@ class ProfileScreen extends StatelessWidget {
     return RoleScaffold(
       userName: 'Руслан Омаров',
       roleName: 'Диспетчер',
+      onNotificationTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+        );
+      },
       bottomNavigationBar: RoleBottomNav(
         items: dispatcherNavItems,
         currentIndex: 3,

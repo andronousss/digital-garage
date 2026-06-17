@@ -8,6 +8,8 @@ class RoleScaffold extends StatelessWidget {
     required this.roleName,
     required this.body,
     this.bottomNavigationBar,
+    this.onNotificationTap,
+    this.onSettingsTap,
   });
 
   static const maxMobileWidth = 430.0;
@@ -16,6 +18,8 @@ class RoleScaffold extends StatelessWidget {
   final String roleName;
   final Widget body;
   final Widget? bottomNavigationBar;
+  final VoidCallback? onNotificationTap;
+  final VoidCallback? onSettingsTap;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +33,12 @@ class RoleScaffold extends StatelessWidget {
             bottom: false,
             child: Column(
               children: [
-                _RoleHeader(userName: userName, roleName: roleName),
+                _RoleHeader(
+                  userName: userName,
+                  roleName: roleName,
+                  onNotificationTap: onNotificationTap,
+                  onSettingsTap: onSettingsTap,
+                ),
                 Expanded(child: body),
               ],
             ),
@@ -51,10 +60,17 @@ class RoleScaffold extends StatelessWidget {
 }
 
 class _RoleHeader extends StatelessWidget {
-  const _RoleHeader({required this.userName, required this.roleName});
+  const _RoleHeader({
+    required this.userName,
+    required this.roleName,
+    this.onNotificationTap,
+    this.onSettingsTap,
+  });
 
   final String userName;
   final String roleName;
+  final VoidCallback? onNotificationTap;
+  final VoidCallback? onSettingsTap;
 
   @override
   Widget build(BuildContext context) {
@@ -78,12 +94,12 @@ class _RoleHeader extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: onNotificationTap,
             icon: const Icon(Icons.notifications_outlined),
             tooltip: 'Уведомления',
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: onSettingsTap,
             icon: const Icon(Icons.settings_outlined),
             tooltip: 'Настройки',
           ),
