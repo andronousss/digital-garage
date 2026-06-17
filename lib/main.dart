@@ -1,5 +1,5 @@
 import 'package:digital_garage/core/theme/app_theme.dart';
-import 'package:digital_garage/features/mechanic/presentation/mechanic_home_screen.dart';
+import 'package:digital_garage/dev_menu_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,7 +15,7 @@ class DigitalGarageApp extends StatelessWidget {
       title: 'Цифровой гараж',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: const MechanicHomeScreen(),
+      home: const DevMenuScreen(),
     );
   }
 }
