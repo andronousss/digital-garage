@@ -108,6 +108,7 @@ class _WaybillScreenState extends State<WaybillScreen> {
                   controller: _mileageStartController,
                   decoration: InputDecoration(
                     hintText: 'км',
+                    hintStyle: TextStyle(color: AppColors.muted),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
@@ -119,6 +120,7 @@ class _WaybillScreenState extends State<WaybillScreen> {
                   controller: _mileageEndController,
                   decoration: InputDecoration(
                     hintText: 'км',
+                    hintStyle: TextStyle(color: AppColors.muted),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
@@ -128,7 +130,8 @@ class _WaybillScreenState extends State<WaybillScreen> {
                 const SizedBox(height: 8),
                 TextField(
                   decoration: InputDecoration(
-                    hintText: '42 л',
+                    hintText: 'л',
+                    hintStyle: TextStyle(color: AppColors.muted),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
