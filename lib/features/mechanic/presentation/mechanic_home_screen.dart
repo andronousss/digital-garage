@@ -62,8 +62,6 @@ class _ScanQrAction extends StatelessWidget {
           children: const [
             Row(
               children: [
-                Icon(Icons.qr_code_scanner, color: Colors.white),
-                SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     'Сканировать QR',
@@ -74,6 +72,8 @@ class _ScanQrAction extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizedBox(width: 10),
+                Icon(Icons.qr_code_scanner, color: Colors.white, size: 68),
               ],
             ),
             Text(

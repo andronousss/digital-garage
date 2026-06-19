@@ -146,7 +146,7 @@ class _MechanicRequestDetailScreenState extends State<MechanicRequestDetailScree
           const SizedBox(height: 8),
           isDropdown
               ? DropdownButtonFormField<String>(
-                  value: controller?.text,
+                  initialValue: controller?.text,
                   items: const [
                     DropdownMenuItem(value: 'Колеса', child: Text('Колеса')),
                     DropdownMenuItem(value: 'Тормоза', child: Text('Тормоза')),

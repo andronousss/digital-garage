@@ -96,7 +96,7 @@ class _IncidentReportScreenState extends State<IncidentReportScreen> {
           const SizedBox(height: 10),
           AppCard(
             child: DropdownButtonFormField<String>(
-              value: _selectedSeverity,
+              initialValue: _selectedSeverity,
               items: const [
                 DropdownMenuItem(value: 'Легкая', child: Text('Легкая')),
                 DropdownMenuItem(value: 'Средняя', child: Text('Средняя')),
