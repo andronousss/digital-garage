@@ -148,6 +148,7 @@ class _QuickActionCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title, style: AppTextStyles.cardTitle),
+          const SizedBox(height: 8),
           Text(subtitle, style: AppTextStyles.caption),
         ],
       ),

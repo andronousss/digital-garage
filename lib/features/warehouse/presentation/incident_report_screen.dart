@@ -83,7 +83,8 @@ class _IncidentReportScreenState extends State<IncidentReportScreen> {
                 const SizedBox(height: 8),
                 TextField(
                   decoration: InputDecoration(
-                    hintText: '11.06.2026 · 14:20',
+                    hintText: 'xx.xx.xxxx · --:--',
+                    hintStyle: TextStyle(color: AppColors.muted),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
@@ -148,6 +149,7 @@ class _IncidentReportScreenState extends State<IncidentReportScreen> {
               maxLines: 4,
               decoration: InputDecoration(
                 hintText: 'Описание инцидента...',
+                hintStyle: TextStyle(color: AppColors.muted),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
