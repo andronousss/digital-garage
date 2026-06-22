@@ -27,7 +27,11 @@ void navigateDriverTab(BuildContext context, int index) {
 
   Navigator.pushReplacement(
     context,
-    MaterialPageRoute(builder: (_) => target),
+    PageRouteBuilder(
+      pageBuilder: (context, animation1, animation2) => target,
+      transitionDuration: Duration.zero,
+      reverseTransitionDuration: Duration.zero,
+    ),
   );
 }
 
