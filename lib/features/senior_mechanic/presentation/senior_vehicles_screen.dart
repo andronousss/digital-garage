@@ -19,7 +19,7 @@ class SeniorVehiclesScreen extends StatefulWidget {
 class _SeniorVehiclesScreenState extends State<SeniorVehiclesScreen> {
   String _selectedStatus = 'Все';
 
-  final _vehicles = const [
+  static const _allVehicles = [
     VehicleData(
       brand: 'Hyundai H350',
       date: '25.06.2020',
@@ -59,11 +59,12 @@ class _SeniorVehiclesScreenState extends State<SeniorVehiclesScreen> {
   ];
 
   List<VehicleData> get _filtered => _selectedStatus == 'Все'
-      ? _vehicles
-      : _vehicles.where((v) => v.status == _selectedStatus).toList();
+      ? _allVehicles
+      : _allVehicles.where((v) => v.status == _selectedStatus).toList();
 
   @override
   Widget build(BuildContext context) {
+    final vehicles = _filtered;
     return RoleScaffold(
       userName: 'Руслан Омарович',
       roleName: 'Старший механик',
@@ -72,68 +73,68 @@ class _SeniorVehiclesScreenState extends State<SeniorVehiclesScreen> {
         currentIndex: 2,
         onChanged: (i) => navigateSeniorTab(context, i),
       ),
-      body: Column(
-        children: [
-          // Заголовок + добавить
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Борты', style: AppTextStyles.cardTitle),
-                FilledButton.icon(
-                  icon: const Icon(Icons.add, size: 16),
-                  label: const Text('Добавить борт',
-                      style: TextStyle(fontSize: 13)),
-                  onPressed: () {},
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Фильтр статуса
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  for (final s in ['Все', 'Резерв', 'В смене', 'На ремонте/ТО'])
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: GestureDetector(
-                        onTap: () => setState(() => _selectedStatus = s),
-                        child: _selectedStatus == s
-                            ? StatusChip(label: s)
-                            : StatusChip(
-                                label: s,
-                                backgroundColor: AppColors.field,
-                                foregroundColor: AppColors.muted,
-                              ),
+                  // Заголовок + добавить
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Борты', style: AppTextStyles.cardTitle),
+                      FilledButton.icon(
+                        icon: const Icon(Icons.add, size: 16),
+                        label: const Text('Добавить борт',
+                            style: TextStyle(fontSize: 13)),
+                        onPressed: () {},
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Фильтры
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: ['Все', 'Резерв', 'В смене', 'На ремонте/ТО']
+                          .map((s) => Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      setState(() => _selectedStatus = s),
+                                  child: s == _selectedStatus
+                                      ? StatusChip(label: s)
+                                      : StatusChip(
+                                          label: s,
+                                          backgroundColor: AppColors.field,
+                                          foregroundColor: AppColors.muted,
+                                        ),
+                                ),
+                              ))
+                          .toList(),
                     ),
+                  ),
+                  const SizedBox(height: 12),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 12),
-
-          // Список
-          Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.fromLTRB(14, 0, 14, 24),
-              itemCount: _filtered.length,
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 24),
+            sliver: SliverList.separated(
+              itemCount: vehicles.length,
               separatorBuilder: (context, index) => const SizedBox(height: 10),
               itemBuilder: (context, i) {
-                final v = _filtered[i];
+                final v = vehicles[i];
                 return _VehicleCard(
                   vehicle: v,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          SeniorVehiclePassportScreen(vehicle: v),
+                      builder: (_) => SeniorVehiclePassportScreen(vehicle: v),
                     ),
                   ),
                 );
@@ -176,9 +177,14 @@ class _VehicleCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${vehicle.brand} · ${vehicle.date}',
+              Expanded(
+                child: Text(
+                  ' · ',
                   style: AppTextStyles.body
-                      .copyWith(fontWeight: FontWeight.w800)),
+                      .copyWith(fontWeight: FontWeight.w800),
+                ),
+              ),
+              const SizedBox(width: 8),
               StatusChip(
                   label: vehicle.status,
                   backgroundColor: chipBg,
@@ -186,9 +192,10 @@ class _VehicleCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          Text('Борт №${vehicle.bortNum} · Гос. номер: ${vehicle.govNum}',
+          Text(
+              'Борт № · Гос. номер: ',
               style: AppTextStyles.body),
-          Text('ID: ${vehicle.id}', style: AppTextStyles.caption),
+          Text('ID: ', style: AppTextStyles.caption),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -216,6 +223,7 @@ class _VehicleCard extends StatelessWidget {
   }
 }
 
+// Публичная модель данных — используется в passport screen
 class VehicleData {
   const VehicleData({
     required this.brand,

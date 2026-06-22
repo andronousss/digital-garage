@@ -43,6 +43,11 @@ class _SeniorRequestsScreenState extends State<SeniorRequestsScreen>
         currentIndex: 0,
         onChanged: (i) => navigateSeniorTab(context, i),
       ),
+      leading: IconButton(
+        onPressed: () => Navigator.pop(context),
+        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+        color: AppColors.text,
+      ),
       body: Column(
         children: [
           Padding(

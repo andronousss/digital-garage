@@ -52,6 +52,11 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
         currentIndex: 1,
         onChanged: (i) => navigateSeniorTab(context, i),
       ),
+      leading: IconButton(
+        onPressed: () => Navigator.pop(context),
+        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+        color: AppColors.text,
+      ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(14, 14, 14, 32),
         children: [

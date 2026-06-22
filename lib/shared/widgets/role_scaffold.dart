@@ -8,6 +8,7 @@ class RoleScaffold extends StatelessWidget {
     required this.roleName,
     required this.body,
     this.bottomNavigationBar,
+    this.leading,
   });
 
   static const maxMobileWidth = 430.0;
@@ -16,6 +17,8 @@ class RoleScaffold extends StatelessWidget {
   final String roleName;
   final Widget body;
   final Widget? bottomNavigationBar;
+  /// Опциональная кнопка слева в шапке (например, кнопка «Назад»)
+  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +32,11 @@ class RoleScaffold extends StatelessWidget {
             bottom: false,
             child: Column(
               children: [
-                _RoleHeader(userName: userName, roleName: roleName),
+                _RoleHeader(
+                  userName: userName,
+                  roleName: roleName,
+                  leading: leading,
+                ),
                 Expanded(child: body),
               ],
             ),
@@ -51,19 +58,25 @@ class RoleScaffold extends StatelessWidget {
 }
 
 class _RoleHeader extends StatelessWidget {
-  const _RoleHeader({required this.userName, required this.roleName});
+  const _RoleHeader({
+    required this.userName,
+    required this.roleName,
+    this.leading,
+  });
 
   final String userName;
   final String roleName;
+  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 58,
-      padding: const EdgeInsets.fromLTRB(16, 8, 6, 8),
+      padding: EdgeInsets.fromLTRB(leading != null ? 4 : 16, 8, 6, 8),
       color: AppColors.header,
       child: Row(
         children: [
+          if (leading != null) leading!,
           Expanded(
             child: Text(
               '$userName ·\n$roleName',

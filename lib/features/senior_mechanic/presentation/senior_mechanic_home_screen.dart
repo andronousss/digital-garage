@@ -11,7 +11,10 @@ import 'senior_vehicles_screen.dart';
 import 'senior_mechanic_profile_screen.dart';
 import 'senior_requests_screen.dart';
 import 'critical_faults_screen.dart';
+import 'dtp_list_screen.dart';
+import 'drivers_list_screen.dart';
 
+// Nav items и helper навигации
 const seniorMechanicNavItems = [
   RoleBottomNavItem(icon: Icons.home_outlined, label: 'Главная'),
   RoleBottomNavItem(icon: Icons.grid_view_outlined, label: 'График ТО'),
@@ -40,6 +43,9 @@ void navigateSeniorTab(BuildContext context, int index) {
   );
 }
 
+// ─────────────────────────────────────────────────────────────
+// Главный экран Старшего механика (точно по макету)
+// ─────────────────────────────────────────────────────────────
 class SeniorMechanicHomeScreen extends StatelessWidget {
   const SeniorMechanicHomeScreen({super.key});
 
@@ -56,85 +62,82 @@ class SeniorMechanicHomeScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(14, 14, 14, 24),
         children: [
-          // Счётчики ДТП и Водители
+          // 1. ДТП | Водители
           Row(
             children: [
               Expanded(
-                child: AppCard(
-                  color: AppColors.dangerSoft,
-                  onTap: () {},
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text('ДТП', style: AppTextStyles.caption),
-                      SizedBox(height: 4),
-                      Text('1 на рассмотрении',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.danger,
-                          )),
-                    ],
-                  ),
+                child: _StatCard(
+                  title: 'ДТП',
+                  count: '1',
+                  subtitle: 'на рассмотрении',
+                  bg: AppColors.dangerSoft,
+                  color: AppColors.danger,
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const DtpListScreen())),
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: AppCard(
-                  color: AppColors.warningSoft,
-                  onTap: () {},
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text('Водители', style: AppTextStyles.caption),
-                      SizedBox(height: 4),
-                      Text('Документы истекают у 0 водителей',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.warning,
-                          )),
-                    ],
-                  ),
+                child: _StatCard(
+                  title: 'Водители',
+                  count: '0',
+                  subtitle: 'Документы\nистекают у 0 водителей',
+                  bg: AppColors.warningSoft,
+                  color: AppColors.warning,
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(
+                          builder: (_) => const DriversListScreen())),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
-          // Ближайшие задачи
-          const _SectionHeader(title: 'Ближайшие задачи'),
+          // 2. Ближайшие задачи
+          const _SectionTitle('Ближайшие задачи'),
           const SizedBox(height: 10),
+
+          // Карточка — заявка
           AppCard(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const SeniorRequestsScreen())),
-            child: Row(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Заявка · Борт 55', style: AppTextStyles.caption),
-                      SizedBox(height: 4),
-                      Text('Колесо А · требуется согласование',
-                          style: AppTextStyles.body),
-                    ],
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Заявка · Борт 55',
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.muted)),
+                    StatusChip(label: 'Новая'),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                StatusChip(
-                  label: 'Новая',
-                  backgroundColor: AppColors.primarySoft,
-                  foregroundColor: AppColors.primary,
+                const SizedBox(height: 6),
+                const Text(
+                  'Колесо А · требуется согласование',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.text),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.push(context,
+                        MaterialPageRoute(
+                            builder: (_) => const SeniorRequestsScreen())),
+                    child: const Text('Проверить и согласовать'),
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 10),
+
+          // Карточка — критическая неисправность
           AppCard(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const CriticalFaultsScreen())),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -142,11 +145,21 @@ class SeniorMechanicHomeScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Критическая неисправность',
-                          style: AppTextStyles.caption),
-                      SizedBox(height: 4),
-                      Text('Передняя правая стойка · разбита',
-                          style: AppTextStyles.body),
+                      Text(
+                        'Критическая неисправность',
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.muted),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        'Передняя правая стойка · разбита',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.text),
+                      ),
                     ],
                   ),
                 ),
@@ -159,27 +172,85 @@ class SeniorMechanicHomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 22),
+          const SizedBox(height: 20),
 
-          // Быстрые действия
-          _QuickActionGrid(context: context),
-          const SizedBox(height: 22),
+          // 3. Быстрые действия
+          Row(
+            children: [
+              Expanded(
+                child: _ActionCard(
+                  icon: Icons.assignment_outlined,
+                  iconColor: AppColors.primary,
+                  bg: AppColors.primarySoft,
+                  title: 'Новые заявки',
+                  subtitle: 'Проверить и согласовать',
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(
+                          builder: (_) => const SeniorRequestsScreen())),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _ActionCard(
+                  icon: Icons.warning_amber_outlined,
+                  iconColor: AppColors.danger,
+                  bg: AppColors.dangerSoft,
+                  title: 'Критические\nнеисправности',
+                  subtitle: '2 неисправности',
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(
+                          builder: (_) => const CriticalFaultsScreen())),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
 
-          // Сегодня
-          const _SectionHeader(title: 'Сегодня'),
+          // Таблица норм — полная ширина
+          AppCard(
+            color: AppColors.successSoft,
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const FuelNormsScreen())),
+            child: Row(
+              children: const [
+                Icon(Icons.table_chart_outlined,
+                    size: 20, color: AppColors.success),
+                SizedBox(width: 12),
+                Text('Таблица норм',
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.text)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // 4. Сегодня
+          const _SectionTitle('Сегодня'),
           const SizedBox(height: 10),
           AppCard(
             color: AppColors.primarySoft,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                Text('График ТО · 13:00–16:00', style: AppTextStyles.caption),
+                Text('График ТО · 13:00 – 16:00',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primary)),
                 SizedBox(height: 4),
                 Text('Борты: 30, 31, 33, 40, 41, 44, 50, 55, 57',
-                    style: AppTextStyles.body),
-                SizedBox(height: 4),
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.text)),
+                SizedBox(height: 2),
                 Text('Категории: Шины, Капот, Свечи',
-                    style: AppTextStyles.caption),
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.muted)),
               ],
             ),
           ),
@@ -189,133 +260,128 @@ class SeniorMechanicHomeScreen extends StatelessWidget {
   }
 }
 
-class _QuickActionGrid extends StatelessWidget {
-  const _QuickActionGrid({required this.context});
-  final BuildContext context;
+// ─────────────────────────────────────────────────────────────
+// Вспомогательные виджеты
+// ─────────────────────────────────────────────────────────────
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle(this.title);
+  final String title;
 
   @override
-  Widget build(BuildContext _) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _QuickCard(
-                title: 'Новые заявки',
-                subtitle: 'Проверить и согласовать',
-                color: AppColors.primarySoft,
-                iconColor: AppColors.primary,
-                icon: Icons.assignment_outlined,
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const SeniorRequestsScreen())),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _QuickCard(
-                title: 'Критические неисправности',
-                subtitle: '2 неисправности',
-                color: AppColors.dangerSoft,
-                iconColor: AppColors.danger,
-                icon: Icons.warning_amber_outlined,
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const CriticalFaultsScreen())),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: _QuickCard(
-                title: 'Таблица норм',
-                subtitle: 'Нормы расхода топлива',
-                color: AppColors.successSoft,
-                iconColor: AppColors.success,
-                icon: Icons.table_chart_outlined,
-                onTap: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const FuelNormsScreen())),
-              ),
-            ),
-            const Expanded(child: SizedBox()),
-          ],
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => Text(
+        title,
+        style: const TextStyle(
+            fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.text),
+      );
 }
 
-class _QuickCard extends StatelessWidget {
-  const _QuickCard({
+class _StatCard extends StatelessWidget {
+  const _StatCard({
     required this.title,
+    required this.count,
     required this.subtitle,
+    required this.bg,
     required this.color,
-    required this.iconColor,
-    required this.icon,
     required this.onTap,
   });
-
   final String title;
+  final String count;
   final String subtitle;
+  final Color bg;
   final Color color;
-  final Color iconColor;
-  final IconData icon;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    return AppCard(
-      color: color,
-      onTap: onTap,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 20, color: iconColor),
-          const SizedBox(height: 8),
-          Text(title,
-              style: AppTextStyles.body
-                  .copyWith(fontWeight: FontWeight.w800)),
-          const SizedBox(height: 2),
-          Text(subtitle, style: AppTextStyles.caption),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => AppCard(
+        color: bg,
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title,
+                style: TextStyle(
+                    fontSize: 12, fontWeight: FontWeight.w700, color: color)),
+            const SizedBox(height: 8),
+            Text(count,
+                style: TextStyle(
+                    fontSize: 26, fontWeight: FontWeight.w900, color: color)),
+            Text(subtitle,
+                style: TextStyle(
+                    fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+          ],
+        ),
+      );
 }
 
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title});
+class _ActionCard extends StatelessWidget {
+  const _ActionCard({
+    required this.icon,
+    required this.iconColor,
+    required this.bg,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+  final IconData icon;
+  final Color iconColor;
+  final Color bg;
   final String title;
+  final String subtitle;
+  final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    return Text(title,
-        style: AppTextStyles.cardTitle
-            .copyWith(fontSize: 15, fontWeight: FontWeight.w800));
-  }
+  Widget build(BuildContext context) => AppCard(
+        color: bg,
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, size: 22, color: iconColor),
+            const SizedBox(height: 8),
+            Text(title,
+                style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.text)),
+            const SizedBox(height: 2),
+            Text(subtitle,
+                style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.muted)),
+          ],
+        ),
+      );
 }
 
-// Заглушка для экрана таблицы норм (объявляется здесь чтобы home мог её импортировать)
+// ─────────────────────────────────────────────────────────────
+// Таблица норм расхода
+// ─────────────────────────────────────────────────────────────
 class FuelNormsScreen extends StatelessWidget {
   const FuelNormsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    const rows = [
+      _NormRow('ГАЗ Соболь 27527', 'АИ-92', '16.30', '14.59', '1.14', '1.14'),
+      _NormRow('Hyundai H350', 'Дизельное', '18.36', '16.56', '1.20', '1.20'),
+      _NormRow('Газ А64 R45-50', 'АИ-92', '17.94', '15.99', '0.00', '1.30'),
+      _NormRow('Газ А64 R45-50', 'Газ', '21.53', '19.73', '0.00', '1.56'),
+      _NormRow('ГАЗ 32212-авт', 'АИ-92', '22.77', '20.30', '0.00', '1.65'),
+      _NormRow('ГАЗ 32212-авт', 'Газ', '30.06', '26.79', '0.00', '2.18'),
+      _NormRow('Газель NEXT', 'АИ-92', '24.80', '23.61', '1.21', '1.21'),
+    ];
+
     return RoleScaffold(
       userName: 'Руслан Омарович',
       roleName: 'Старший механик',
-      bottomNavigationBar: RoleBottomNav(
-        items: seniorMechanicNavItems,
-        currentIndex: 0,
-        onChanged: (i) => navigateSeniorTab(context, i),
+      leading: IconButton(
+        onPressed: () => Navigator.pop(context),
+        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+        color: AppColors.text,
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(14, 14, 14, 24),
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 32),
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -328,129 +394,97 @@ class FuelNormsScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          const _FuelNormCard(
-            name: 'ГАЗ Соболь 27527',
-            fuel: 'АИ-92',
-            summer: '16.30 л',
-            winter: '14.59 л',
-            warmAir: '1.14 л',
-            coldAir: '1.14 л',
-          ),
-          const SizedBox(height: 10),
-          const _FuelNormCard(
-            name: 'Hyundai H350 · Борт 55',
-            fuel: 'Дизельное топливо',
-            summer: '18.36 л',
-            winter: '16.56 л',
-            warmAir: '1.2 л',
-            coldAir: '1.2 л',
-          ),
-          const SizedBox(height: 10),
-          const _FuelNormCard(
-            name: 'Газ А64 R45-50',
-            fuel: 'АИ-92',
-            summer: '17.94 л',
-            winter: '15.99 л',
-            warmAir: '0.00 л',
-            coldAir: '1.30 л',
-          ),
-          const SizedBox(height: 10),
-          const _FuelNormCard(
-            name: 'ГАЗ 32212-авт',
-            fuel: 'АИ-92',
-            summer: '22.77 л',
-            winter: '20.30 л',
-            warmAir: '0.00 л',
-            coldAir: '1.65 л',
-          ),
-          const SizedBox(height: 10),
-          const _FuelNormCard(
-            name: 'Газель "NEXT"',
-            fuel: 'АИ-92',
-            summer: '24.80 л',
-            winter: '23.61 л',
-            warmAir: '1.21 л',
-            coldAir: '1.21 л',
-          ),
+          const SizedBox(height: 8),
+          // Заголовок таблицы
+          _tableHeader(),
+          // Строки
+          ...List.generate(rows.length, (i) => _tableRow(rows[i], i)),
         ],
       ),
     );
   }
+
+  Widget _tableHeader() => Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+        color: AppColors.field,
+        child: Row(
+          children: const [
+            Expanded(flex: 3, child: _ColLabel('Название')),
+            Expanded(flex: 2, child: _ColLabel('Топливо')),
+            Expanded(child: _ColLabel('Зима')),
+            Expanded(child: _ColLabel('Лето')),
+            Expanded(child: _ColLabel('Хол.в')),
+            Expanded(child: _ColLabel('Тёпл.в')),
+          ],
+        ),
+      );
+
+  Widget _tableRow(_NormRow r, int i) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        decoration: BoxDecoration(
+          color: i.isEven ? AppColors.card : AppColors.field,
+          border: const Border(bottom: BorderSide(color: AppColors.line)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+                flex: 3,
+                child: Text(r.name,
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.text))),
+            Expanded(
+                flex: 2,
+                child: Text(r.fuel,
+                    style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.muted))),
+            Expanded(child: _CellValue(r.winter)),
+            Expanded(child: _CellValue(r.summer)),
+            Expanded(child: _CellValue(r.coldAir)),
+            Expanded(child: _CellValue(r.warmAir)),
+          ],
+        ),
+      );
 }
 
-class _FuelNormCard extends StatelessWidget {
-  const _FuelNormCard({
-    required this.name,
-    required this.fuel,
-    required this.summer,
-    required this.winter,
-    required this.warmAir,
-    required this.coldAir,
-  });
+class _ColLabel extends StatelessWidget {
+  const _ColLabel(this.text);
+  final String text;
 
+  @override
+  Widget build(BuildContext context) => Text(
+        text,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+            fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.muted),
+      );
+}
+
+class _CellValue extends StatelessWidget {
+  const _CellValue(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Text(
+        text,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: AppColors.text),
+      );
+}
+
+class _NormRow {
+  const _NormRow(this.name, this.fuel, this.winter, this.summer, this.coldAir,
+      this.warmAir);
   final String name;
   final String fuel;
-  final String summer;
   final String winter;
-  final String warmAir;
+  final String summer;
   final String coldAir;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(name,
-              style: AppTextStyles.body
-                  .copyWith(fontWeight: FontWeight.w800)),
-          Text(fuel, style: AppTextStyles.caption),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _NormItem(label: 'Норма лето', value: summer),
-              ),
-              Expanded(
-                child: _NormItem(label: 'Норма зима', value: winter),
-              ),
-              Expanded(
-                child: _NormItem(label: 'Тёплый воздух', value: warmAir),
-              ),
-              Expanded(
-                child: _NormItem(label: 'Холодный воздух', value: coldAir),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NormItem extends StatelessWidget {
-  const _NormItem({required this.label, required this.value});
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(value,
-            style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                color: AppColors.text)),
-        const SizedBox(height: 2),
-        Text(label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: AppColors.muted)),
-      ],
-    );
-  }
+  final String warmAir;
 }
