@@ -25,6 +25,16 @@ import 'package:digital_garage/features/warehouse/presentation/profile_screen.da
 import 'package:digital_garage/features/warehouse/presentation/request_detail_screen.dart';
 import 'package:digital_garage/features/warehouse/presentation/requests_screen.dart';
 import 'package:digital_garage/features/warehouse/presentation/warehouse_home_screen.dart';
+import 'package:digital_garage/features/senior_mechanic/presentation/senior_mechanic_home_screen.dart';
+import 'package:digital_garage/features/senior_mechanic/presentation/senior_schedule_screen.dart';
+import 'package:digital_garage/features/senior_mechanic/presentation/create_schedule_screen.dart';
+import 'package:digital_garage/features/senior_mechanic/presentation/senior_vehicles_screen.dart';
+import 'package:digital_garage/features/senior_mechanic/presentation/drivers_list_screen.dart';
+import 'package:digital_garage/features/senior_mechanic/presentation/senior_requests_screen.dart';
+import 'package:digital_garage/features/senior_mechanic/presentation/critical_faults_screen.dart';
+import 'package:digital_garage/features/senior_mechanic/presentation/dtp_list_screen.dart';
+import 'package:digital_garage/features/senior_mechanic/presentation/add_dtp_screen.dart';
+import 'package:digital_garage/features/senior_mechanic/presentation/senior_mechanic_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class DevMenuScreen extends StatelessWidget {
@@ -78,6 +88,20 @@ class DevMenuScreen extends StatelessWidget {
           const Text('Аутентификация (Auth)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           _buildButton(context, 'Все экраны Auth', const AuthDevMenuScreen()),
+          const Divider(height: 32),
+          const Text('Старший механик (Senior Mechanic)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          _buildButton(context, 'Главная (Senior Mechanic Home)', const SeniorMechanicHomeScreen()),
+          _buildButton(context, 'График ТО (Senior Schedule)', const SeniorScheduleScreen()),
+          _buildButton(context, 'Создать График ТО (Create Schedule)', const CreateScheduleScreen()),
+          _buildButton(context, 'Борты (Senior Vehicles)', const SeniorVehiclesScreen()),
+          _buildButton(context, 'Список водителей (Drivers List)', const DriversListScreen()),
+          _buildButton(context, 'Заявки (Senior Requests)', const SeniorRequestsScreen()),
+          _buildButton(context, 'Критические неисправности (Critical Faults)', const CriticalFaultsScreen()),
+          _buildButton(context, 'ДТП (DTP List)', const DtpListScreen()),
+          _buildButton(context, 'Добавить ДТП (Add DTP)', const AddDtpScreen()),
+          _buildButton(context, 'Таблица норм (Fuel Norms)', const FuelNormsScreen()),
+          _buildButton(context, 'Профиль (Senior Mechanic Profile)', const SeniorMechanicProfileScreen()),
         ],
       ),
     );
