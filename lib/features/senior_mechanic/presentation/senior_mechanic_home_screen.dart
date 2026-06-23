@@ -3,7 +3,6 @@ import 'package:digital_garage/core/theme/app_text_styles.dart';
 import 'package:digital_garage/shared/widgets/app_card.dart';
 import 'package:digital_garage/shared/widgets/role_bottom_nav.dart';
 import 'package:digital_garage/shared/widgets/role_scaffold.dart';
-import 'package:digital_garage/shared/widgets/status_chip.dart';
 import 'package:flutter/material.dart';
 
 import 'senior_schedule_screen.dart';
@@ -62,196 +61,84 @@ class SeniorMechanicHomeScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(14, 14, 14, 24),
         children: [
-          // 1. ДТП | Водители
+          _HeroRequestCard(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SeniorRequestsScreen()),
+            ),
+          ),
+          const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
-                child: _StatCard(
-                  title: 'ДТП',
-                  count: '1',
-                  subtitle: 'на рассмотрении',
-                  bg: AppColors.dangerSoft,
-                  color: AppColors.danger,
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const DtpListScreen())),
+                child: _MiniHomeCard(
+                  title: 'Таблица норм',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const FuelNormsScreen()),
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: _StatCard(
-                  title: 'Водители',
-                  count: '0',
-                  subtitle: 'Документы\nистекают у 0 водителей',
-                  bg: AppColors.warningSoft,
-                  color: AppColors.warning,
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(
-                          builder: (_) => const DriversListScreen())),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // 2. Ближайшие задачи
-          const _SectionTitle('Ближайшие задачи'),
-          const SizedBox(height: 10),
-
-          // Карточка — заявка
-          AppCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Заявка · Борт 55',
-                        style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.muted)),
-                    StatusChip(label: 'Новая'),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Колесо А · требуется согласование',
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.text),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.push(context,
-                        MaterialPageRoute(
-                            builder: (_) => const SeniorRequestsScreen())),
-                    child: const Text('Проверить и согласовать'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-
-          // Карточка — критическая неисправность
-          AppCard(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Критическая неисправность',
-                        style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.muted),
-                      ),
-                      SizedBox(height: 6),
-                      Text(
-                        'Передняя правая стойка · разбита',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.text),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                StatusChip(
-                  label: '!',
-                  backgroundColor: AppColors.dangerSoft,
-                  foregroundColor: AppColors.danger,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // 3. Быстрые действия
-          Row(
-            children: [
-              Expanded(
-                child: _ActionCard(
-                  icon: Icons.assignment_outlined,
-                  iconColor: AppColors.primary,
-                  bg: AppColors.primarySoft,
-                  title: 'Новые заявки',
-                  subtitle: 'Проверить и согласовать',
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(
-                          builder: (_) => const SeniorRequestsScreen())),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _ActionCard(
-                  icon: Icons.warning_amber_outlined,
-                  iconColor: AppColors.danger,
-                  bg: AppColors.dangerSoft,
+                child: _MiniHomeCard(
                   title: 'Критические\nнеисправности',
                   subtitle: '2 неисправности',
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(
-                          builder: (_) => const CriticalFaultsScreen())),
+                  withDot: true,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const CriticalFaultsScreen()),
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 10),
-
-          // Таблица норм — полная ширина
-          AppCard(
-            color: AppColors.successSoft,
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const FuelNormsScreen())),
-            child: Row(
-              children: const [
-                Icon(Icons.table_chart_outlined,
-                    size: 20, color: AppColors.success),
-                SizedBox(width: 12),
-                Text('Таблица норм',
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.text)),
-              ],
+          Row(
+            children: [
+              Expanded(
+                child: _MiniHomeCard(
+                  title: 'ДТП',
+                  subtitle: '1 на рассмотрении',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const DtpListScreen()),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _MiniHomeCard(
+                  title: 'Водители',
+                  subtitle: 'Документы истекают у\n0 водителей',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const DriversListScreen()),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          const _TasksHeader(),
+          const SizedBox(height: 8),
+          _TaskTile(
+            subtitle: 'Заявка · Борт 55',
+            title: 'Колесо А · требуется\nсогласование',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SeniorRequestsScreen()),
             ),
           ),
-          const SizedBox(height: 20),
-
-          // 4. Сегодня
-          const _SectionTitle('Сегодня'),
           const SizedBox(height: 10),
-          AppCard(
-            color: AppColors.primarySoft,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text('График ТО · 13:00 – 16:00',
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.primary)),
-                SizedBox(height: 4),
-                Text('Борты: 30, 31, 33, 40, 41, 44, 50, 55, 57',
-                    style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.text)),
-                SizedBox(height: 2),
-                Text('Категории: Шины, Капот, Свечи',
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.muted)),
-              ],
+          _TaskTile(
+            subtitle: 'Критическая неисправность',
+            title: 'Передняя правая стойка ·\nразбита',
+            color: AppColors.dangerSoft,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const CriticalFaultsScreen()),
             ),
           ),
         ],
@@ -275,83 +162,249 @@ class _SectionTitle extends StatelessWidget {
       );
 }
 
-class _StatCard extends StatelessWidget {
-  const _StatCard({
+class _HeroRequestCard extends StatelessWidget {
+  const _HeroRequestCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: onTap,
+        child: Ink(
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Новые заявки',
+                      style: TextStyle(
+                        fontSize: 34 / 2,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAF2FF),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.description_outlined,
+                      color: AppColors.primary,
+                      size: 24,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'Проверить и согласовать →',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MiniHomeCard extends StatelessWidget {
+  const _MiniHomeCard({
     required this.title,
-    required this.count,
-    required this.subtitle,
-    required this.bg,
-    required this.color,
     required this.onTap,
+    this.subtitle,
+    this.withDot = false,
   });
+
   final String title;
-  final String count;
+  final String? subtitle;
+  final bool withDot;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Ink(
+          height: 110,
+          decoration: BoxDecoration(
+            color: const Color(0xFFF1F1F1),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFD8D8D8)),
+          ),
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 8),
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18 / 1.25,
+                      height: 1.2,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const Spacer(),
+                  if (subtitle != null)
+                    Text(
+                      subtitle!,
+                      style: const TextStyle(
+                        fontSize: 16 / 1.2,
+                        height: 1.2,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF4F4F4F),
+                      ),
+                    ),
+                ],
+              ),
+              if (withDot)
+                const Positioned(
+                  top: 0,
+                  right: 0,
+                  child: _RedDot(),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TasksHeader extends StatelessWidget {
+  const _TasksHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Ближайшие задачи',
+          style: TextStyle(
+            fontSize: 34 / 2,
+            fontWeight: FontWeight.w800,
+            color: Colors.black,
+          ),
+        ),
+        Text(
+          'Сегодня',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: AppColors.primary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TaskTile extends StatelessWidget {
+  const _TaskTile({
+    required this.subtitle,
+    required this.title,
+    required this.onTap,
+    this.color = Colors.white,
+  });
+
   final String subtitle;
-  final Color bg;
+  final String title;
   final Color color;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => AppCard(
-        color: bg,
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
         onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title,
-                style: TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w700, color: color)),
-            const SizedBox(height: 8),
-            Text(count,
-                style: TextStyle(
-                    fontSize: 26, fontWeight: FontWeight.w900, color: color)),
-            Text(subtitle,
-                style: TextStyle(
-                    fontSize: 11, fontWeight: FontWeight.w600, color: color)),
-          ],
+        child: Ink(
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: const Color(0xFFD5D5D5)),
+          ),
+          padding: const EdgeInsets.fromLTRB(10, 8, 28, 10),
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 15 / 1.2,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF9699A3),
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 36 / 2,
+                      height: 1.05,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              const Positioned(
+                top: 0,
+                right: -16,
+                child: _RedDot(),
+              ),
+            ],
+          ),
         ),
-      );
+      ),
+    );
+  }
 }
 
-class _ActionCard extends StatelessWidget {
-  const _ActionCard({
-    required this.icon,
-    required this.iconColor,
-    required this.bg,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-  final IconData icon;
-  final Color iconColor;
-  final Color bg;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
+class _RedDot extends StatelessWidget {
+  const _RedDot();
 
   @override
-  Widget build(BuildContext context) => AppCard(
-        color: bg,
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, size: 22, color: iconColor),
-            const SizedBox(height: 8),
-            Text(title,
-                style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.text)),
-            const SizedBox(height: 2),
-            Text(subtitle,
-                style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.muted)),
-          ],
-        ),
-      );
+  Widget build(BuildContext context) {
+    return Container(
+      width: 12,
+      height: 12,
+      decoration: const BoxDecoration(
+        color: Color(0xFFFF0000),
+        shape: BoxShape.circle,
+      ),
+    );
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
