@@ -13,9 +13,29 @@ class CreateScheduleScreen extends StatefulWidget {
 }
 
 class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
+  DateTime? _dateFrom;
+  DateTime? _dateTo;
+  TimeOfDay? _timeFrom;
+  TimeOfDay? _timeTo;
+
   int _consecutiveDays = 0;
   int _everyDays = 0;
+  int _durationMinutes = 0;
   bool _limitByTime = false;
+  int _limitCurrent = 0;
+  int _limitMax = 0;
+
+  final Set<String> _selectedCategories = {};
+  final Set<String> _selectedBorty = {};
+
+  static const _dayUnits = ['Дней', 'Недель'];
+  static const _minuteUnits = ['Минут', 'Часов'];
+  static const _categories = ['Шины', 'Капот', 'Тормоза', 'Свечи', 'Колёса'];
+  static const _borty = ['30', '31', '33', '40', '41', '44', '50', '55', '57'];
+
+  String _consecutiveUnit = _dayUnits.first;
+  String _everyUnit = _dayUnits.first;
+  String _durationUnit = _minuteUnits.first;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +63,7 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                 child: Text(
                   'Создать График ТО',
                   style: TextStyle(
-                    fontSize: 34 / 2,
+                    fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Colors.black,
                   ),
@@ -55,10 +75,22 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
           _InputBlock(
             title: 'Дата:',
             child: Row(
-              children: const [
-                Expanded(child: _InputTile(value: '--.--.----', icon: Icons.calendar_today)),
-                SizedBox(width: 8),
-                Expanded(child: _InputTile(value: '--.--.----', icon: Icons.calendar_today)),
+              children: [
+                Expanded(
+                  child: _InputTile(
+                    value: _dateFrom == null ? '--.--.----' : _formatDate(_dateFrom!),
+                    icon: Icons.calendar_today,
+                    onTap: () => _pickDate(isFrom: true),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _InputTile(
+                    value: _dateTo == null ? '--.--.----' : _formatDate(_dateTo!),
+                    icon: Icons.calendar_today,
+                    onTap: () => _pickDate(isFrom: false),
+                  ),
+                ),
               ],
             ),
           ),
@@ -75,7 +107,17 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                   onPlus: () => setState(() => _consecutiveDays++),
                 ),
                 const SizedBox(width: 8),
-                const Expanded(child: _DropdownTile(label: 'Дней')),
+                Expanded(
+                  child: _DropdownTile(
+                    label: _consecutiveUnit,
+                    onTap: () => _pickOption(
+                      title: 'Единицы',
+                      options: _dayUnits,
+                      current: _consecutiveUnit,
+                      onSelected: (v) => setState(() => _consecutiveUnit = v),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -92,17 +134,39 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                   onPlus: () => setState(() => _everyDays++),
                 ),
                 const SizedBox(width: 8),
-                const Expanded(child: _DropdownTile(label: 'Дней')),
+                Expanded(
+                  child: _DropdownTile(
+                    label: _everyUnit,
+                    onTap: () => _pickOption(
+                      title: 'Единицы',
+                      options: _dayUnits,
+                      current: _everyUnit,
+                      onSelected: (v) => setState(() => _everyUnit = v),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 8),
           _InputBlock(
             child: Row(
-              children: const [
-                Expanded(child: _InputTile(value: 'С   --:--', icon: Icons.access_time_filled)),
-                SizedBox(width: 8),
-                Expanded(child: _InputTile(value: 'до   --:--', icon: Icons.access_time_filled)),
+              children: [
+                Expanded(
+                  child: _InputTile(
+                    value: _timeFrom == null ? 'С   --:--' : 'С   ${_formatTime(_timeFrom!)}',
+                    icon: Icons.access_time_filled,
+                    onTap: () => _pickTime(isFrom: true),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _InputTile(
+                    value: _timeTo == null ? 'до   --:--' : 'до   ${_formatTime(_timeTo!)}',
+                    icon: Icons.access_time_filled,
+                    onTap: () => _pickTime(isFrom: false),
+                  ),
+                ),
               ],
             ),
           ),
@@ -110,17 +174,41 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
           _InputBlock(
             title: 'Длительность:',
             child: Row(
-              children: const [
+              children: [
                 _SignPill(sign: '-'),
-                SizedBox(width: 8),
-                Expanded(child: _DropdownTile(label: 'Минут')),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _DropdownTile(
+                    label: _durationUnit,
+                    onTap: () => _pickOption(
+                      title: 'Единицы',
+                      options: _minuteUnits,
+                      current: _durationUnit,
+                      onSelected: (v) => setState(() => _durationUnit = v),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _StepperBox(
+                  value: _durationMinutes,
+                  onMinus: () => setState(() {
+                    if (_durationMinutes > 0) _durationMinutes--;
+                  }),
+                  onPlus: () => setState(() => _durationMinutes++),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 8),
-          const _InputBlock(
+          _InputBlock(
             title: 'Категории',
-            child: _DropdownTile(label: 'Выбрать', isHint: true),
+            child: _DropdownTile(
+              label: _selectedCategories.isEmpty
+                  ? 'Выбрать'
+                  : _selectedCategories.join(', '),
+              isHint: _selectedCategories.isEmpty,
+              onTap: _pickCategories,
+            ),
           ),
           const SizedBox(height: 8),
           _InputBlock(
@@ -141,9 +229,9 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                   activeColor: AppColors.primary,
                   visualDensity: VisualDensity.compact,
                 ),
-                const Text(
-                  '-/-',
-                  style: TextStyle(
+                Text(
+                  '$_limitCurrent/$_limitMax',
+                  style: const TextStyle(
                     fontSize: 13,
                     color: Color(0xFF9AA9C0),
                   ),
@@ -152,16 +240,20 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          const _InputBlock(
+          _InputBlock(
             title: 'Борты',
-            child: _DropdownTile(label: 'Выбрать'),
+            child: _DropdownTile(
+              label: _selectedBorty.isEmpty ? 'Выбрать' : _selectedBorty.join(', '),
+              isHint: _selectedBorty.isEmpty,
+              onTap: _pickBorty,
+            ),
           ),
           const SizedBox(height: 8),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
-              'Кол-во бортов: -',
-              style: TextStyle(
+              'Кол-во бортов: ${_selectedBorty.length}',
+              style: const TextStyle(
                 fontSize: 13,
                 color: Color(0xFF9AA9C0),
               ),
@@ -172,7 +264,11 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Сохранено как черновик')),
+                    );
+                  },
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(0, 44),
                     side: const BorderSide(color: Color(0xFFD4DCE8)),
@@ -191,7 +287,11 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: FilledButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('График опубликован')),
+                    );
+                  },
                   style: FilledButton.styleFrom(
                     minimumSize: const Size(0, 44),
                     backgroundColor: AppColors.primary,
@@ -220,6 +320,178 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _pickDate({required bool isFrom}) async {
+    final current = isFrom ? _dateFrom : _dateTo;
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: current ?? DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2035),
+      locale: const Locale('ru'),
+    );
+    if (picked == null) {
+      return;
+    }
+
+    setState(() {
+      if (isFrom) {
+        _dateFrom = picked;
+        if (_dateTo != null && _dateTo!.isBefore(_dateFrom!)) {
+          _dateTo = _dateFrom;
+        }
+      } else {
+        _dateTo = picked;
+        if (_dateFrom != null && _dateFrom!.isAfter(_dateTo!)) {
+          _dateFrom = _dateTo;
+        }
+      }
+    });
+  }
+
+  Future<void> _pickTime({required bool isFrom}) async {
+    final current = isFrom ? _timeFrom : _timeTo;
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: current ?? const TimeOfDay(hour: 9, minute: 0),
+      helpText: isFrom ? 'Выберите время начала' : 'Выберите время окончания',
+    );
+    if (picked == null) {
+      return;
+    }
+
+    setState(() {
+      if (isFrom) {
+        _timeFrom = picked;
+      } else {
+        _timeTo = picked;
+      }
+    });
+  }
+
+  Future<void> _pickOption({
+    required String title,
+    required List<String> options,
+    required String current,
+    required ValueChanged<String> onSelected,
+  }) async {
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+              ),
+              ...options.map(
+                (item) => ListTile(
+                  title: Text(item),
+                  trailing: item == current
+                      ? const Icon(Icons.check, color: AppColors.primary)
+                      : null,
+                  onTap: () => Navigator.pop(context, item),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (selected != null) {
+      onSelected(selected);
+    }
+  }
+
+  Future<void> _pickCategories() async {
+    final picked = await _pickMulti('Категории', _categories, _selectedCategories);
+    if (picked != null) {
+      setState(() {
+        _selectedCategories
+          ..clear()
+          ..addAll(picked);
+      });
+    }
+  }
+
+  Future<void> _pickBorty() async {
+    final picked = await _pickMulti('Борты', _borty, _selectedBorty);
+    if (picked != null) {
+      setState(() {
+        _selectedBorty
+          ..clear()
+          ..addAll(picked);
+        _limitCurrent = _selectedBorty.length;
+        if (_limitMax < _limitCurrent) {
+          _limitMax = _limitCurrent;
+        }
+      });
+    }
+  }
+
+  Future<Set<String>?> _pickMulti(String title, List<String> values, Set<String> initial) async {
+    final local = {...initial};
+
+    return showModalBottomSheet<Set<String>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 18),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, local),
+                          child: const Text('Готово'),
+                        ),
+                      ],
+                    ),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 330),
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: values.map((value) {
+                          final checked = local.contains(value);
+                          return CheckboxListTile(
+                            value: checked,
+                            title: Text(value),
+                            activeColor: AppColors.primary,
+                            onChanged: (v) {
+                              setSheetState(() {
+                                if (v ?? false) {
+                                  local.add(value);
+                                } else {
+                                  local.remove(value);
+                                }
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
@@ -260,68 +532,89 @@ class _InputBlock extends StatelessWidget {
 }
 
 class _InputTile extends StatelessWidget {
-  const _InputTile({required this.value, required this.icon});
+  const _InputTile({required this.value, required this.icon, required this.onTap});
 
   final String value;
   final IconData icon;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 36,
-      decoration: BoxDecoration(
-        color: const Color(0xFFEAF0FA),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(9),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                color: Color(0xFF8DA0BC),
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+        child: Ink(
+          height: 36,
+          decoration: BoxDecoration(
+            color: const Color(0xFFEAF0FA),
+            borderRadius: BorderRadius.circular(9),
           ),
-          Icon(icon, size: 14, color: const Color(0xFF7288A9)),
-        ],
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  value,
+                  style: const TextStyle(
+                    color: Color(0xFF8DA0BC),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Icon(icon, size: 14, color: const Color(0xFF7288A9)),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
 class _DropdownTile extends StatelessWidget {
-  const _DropdownTile({required this.label, this.isHint = false});
+  const _DropdownTile({
+    required this.label,
+    required this.onTap,
+    this.isHint = false,
+  });
 
   final String label;
   final bool isHint;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 36,
-      decoration: BoxDecoration(
-        color: const Color(0xFFEAF0FA),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(9),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: isHint ? const Color(0xFF9EB0C7) : const Color(0xFF4B5F80),
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+        child: Ink(
+          height: 36,
+          decoration: BoxDecoration(
+            color: const Color(0xFFEAF0FA),
+            borderRadius: BorderRadius.circular(9),
           ),
-          const Icon(Icons.keyboard_arrow_down, size: 16, color: Color(0xFF6F84A5)),
-        ],
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: isHint ? const Color(0xFF9EB0C7) : const Color(0xFF4B5F80),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const Icon(Icons.keyboard_arrow_down, size: 16, color: Color(0xFF6F84A5)),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -423,4 +716,17 @@ class _SignButton extends StatelessWidget {
       ),
     );
   }
+}
+
+String _formatDate(DateTime date) {
+  final d = date.day.toString().padLeft(2, '0');
+  final m = date.month.toString().padLeft(2, '0');
+  final y = (date.year % 100).toString().padLeft(2, '0');
+  return '$d.$m.$y';
+}
+
+String _formatTime(TimeOfDay time) {
+  final h = time.hour.toString().padLeft(2, '0');
+  final m = time.minute.toString().padLeft(2, '0');
+  return '$h:$m';
 }
