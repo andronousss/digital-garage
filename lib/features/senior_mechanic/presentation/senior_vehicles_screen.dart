@@ -73,74 +73,67 @@ class _SeniorVehiclesScreenState extends State<SeniorVehiclesScreen> {
         currentIndex: 2,
         onChanged: (i) => navigateSeniorTab(context, i),
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Заголовок + добавить
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Борты', style: AppTextStyles.cardTitle),
-                      FilledButton.icon(
-                        icon: const Icon(Icons.add, size: 16),
-                        label: const Text('Добавить борт',
-                            style: TextStyle(fontSize: 13)),
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  // Фильтры
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: ['Все', 'Резерв', 'В смене', 'На ремонте/ТО']
-                          .map((s) => Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: GestureDetector(
-                                  onTap: () =>
-                                      setState(() => _selectedStatus = s),
-                                  child: s == _selectedStatus
-                                      ? StatusChip(label: s)
-                                      : StatusChip(
-                                          label: s,
-                                          backgroundColor: AppColors.field,
-                                          foregroundColor: AppColors.muted,
-                                        ),
-                                ),
-                              ))
-                          .toList(),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 24),
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Борты', style: AppTextStyles.cardTitle),
+              FilledButton.icon(
+                icon: const Icon(Icons.add, size: 16),
+                label: const Text('Добавить борт', style: TextStyle(fontSize: 13)),
+                onPressed: () {},
               ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: ['Все', 'Резерв', 'В смене', 'На ремонте/ТО']
+                  .map(
+                    (status) => Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedStatus = status),
+                        child: status == _selectedStatus
+                            ? StatusChip(label: status)
+                            : StatusChip(
+                                label: status,
+                                backgroundColor: AppColors.field,
+                                foregroundColor: AppColors.muted,
+                              ),
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(14, 0, 14, 24),
-            sliver: SliverList.separated(
-              itemCount: vehicles.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
-              itemBuilder: (context, i) {
-                final v = vehicles[i];
-                return _VehicleCard(
-                  vehicle: v,
+          const SizedBox(height: 12),
+          if (vehicles.isEmpty)
+            const AppCard(
+              child: Text(
+                'Нет бортов по выбранному фильтру',
+                style: AppTextStyles.caption,
+              ),
+            )
+          else
+            ...List.generate(vehicles.length, (index) {
+              final vehicle = vehicles[index];
+              return Padding(
+                padding: EdgeInsets.only(bottom: index == vehicles.length - 1 ? 0 : 10),
+                child: _VehicleCard(
+                  vehicle: vehicle,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => SeniorVehiclePassportScreen(vehicle: v),
+                      builder: (_) => SeniorVehiclePassportScreen(vehicle: vehicle),
                     ),
                   ),
-                );
-              },
-            ),
-          ),
+                ),
+              );
+            }),
         ],
       ),
     );
@@ -179,9 +172,8 @@ class _VehicleCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  ' · ',
-                  style: AppTextStyles.body
-                      .copyWith(fontWeight: FontWeight.w800),
+                  '${vehicle.brand} · ${vehicle.date}',
+                  style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w800),
                 ),
               ),
               const SizedBox(width: 8),
@@ -193,23 +185,28 @@ class _VehicleCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-              'Борт № · Гос. номер: ',
-              style: AppTextStyles.body),
-          Text('ID: ', style: AppTextStyles.caption),
+            'Борт №${vehicle.bortNum} · Гос. номер: ${vehicle.govNum}',
+            style: AppTextStyles.body,
+          ),
+          Text('ID: ${vehicle.id}', style: AppTextStyles.caption),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Номер тех. паспорта',
-                      style: AppTextStyles.caption),
-                  Text(vehicle.passport,
-                      style: AppTextStyles.body
-                          .copyWith(fontWeight: FontWeight.w700)),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Номер тех. паспорта', style: AppTextStyles.caption),
+                    Text(
+                      vehicle.passport,
+                      style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               TextButton.icon(
                 onPressed: onTap,
                 icon: const Icon(Icons.arrow_forward, size: 16),

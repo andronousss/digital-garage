@@ -5,27 +5,55 @@ import 'package:digital_garage/shared/widgets/app_card.dart';
 import 'package:digital_garage/shared/widgets/role_bottom_nav.dart';
 import 'package:digital_garage/shared/widgets/role_scaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'mechanic_form_providers.dart';
 import 'mechanic_schedule_screen.dart';
 
-class MechanicRequestDetailScreen extends StatefulWidget {
+class MechanicRequestDetailScreen extends ConsumerStatefulWidget {
   const MechanicRequestDetailScreen({super.key});
 
   @override
-  State<MechanicRequestDetailScreen> createState() => _MechanicRequestDetailScreenState();
+  ConsumerState<MechanicRequestDetailScreen> createState() =>
+      _MechanicRequestDetailScreenState();
 }
 
-class _MechanicRequestDetailScreenState extends State<MechanicRequestDetailScreen> {
+class _MechanicRequestDetailScreenState
+    extends ConsumerState<MechanicRequestDetailScreen> {
   late TextEditingController _categoryController;
   late TextEditingController _detailController;
   late TextEditingController _commentController;
+  late TextEditingController _quantityController;
 
   @override
   void initState() {
     super.initState();
-    _categoryController = TextEditingController(text: 'Колеса');
-    _detailController = TextEditingController(text: 'Колесо A');
-    _commentController = TextEditingController(text: 'Нужна замена после осмотра ТО.');
+    _categoryController =
+        TextEditingController(text: ref.read(mechanicRequestCategoryProvider));
+    _detailController =
+        TextEditingController(text: ref.read(mechanicRequestDetailProvider));
+    _commentController =
+        TextEditingController(text: ref.read(mechanicRequestCommentProvider));
+    _quantityController = TextEditingController(
+      text: ref.read(mechanicRequestQuantityProvider).toString(),
+    );
+
+    _categoryController.addListener(() {
+      ref.read(mechanicRequestCategoryProvider.notifier).state =
+          _categoryController.text;
+    });
+    _detailController.addListener(() {
+      ref.read(mechanicRequestDetailProvider.notifier).state =
+          _detailController.text;
+    });
+    _commentController.addListener(() {
+      ref.read(mechanicRequestCommentProvider.notifier).state =
+          _commentController.text;
+    });
+    _quantityController.addListener(() {
+      final parsed = int.tryParse(_quantityController.text) ?? 0;
+      ref.read(mechanicRequestQuantityProvider.notifier).state = parsed;
+    });
   }
 
   @override
@@ -33,11 +61,14 @@ class _MechanicRequestDetailScreenState extends State<MechanicRequestDetailScree
     _categoryController.dispose();
     _detailController.dispose();
     _commentController.dispose();
+    _quantityController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final selectedStatus = ref.watch(mechanicRequestStatusProvider);
+
     return RoleScaffold(
       userName: 'Азамат Рахимов',
       roleName: 'Механик',
@@ -78,7 +109,8 @@ class _MechanicRequestDetailScreenState extends State<MechanicRequestDetailScree
                 const Text('Количество', style: AppTextStyles.caption),
                 const SizedBox(height: 8),
                 TextField(
-                  controller: TextEditingController(text: '1'),
+                  controller: _quantityController,
+                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -103,13 +135,26 @@ class _MechanicRequestDetailScreenState extends State<MechanicRequestDetailScree
           const SizedBox(height: 22),
           const _SectionHeader(title: 'Статус'),
           const SizedBox(height: 10),
+          if (selectedStatus != null) ...[
+            AppCard(
+              color: AppColors.primarySoft,
+              child: Text(
+                'Выбранный статус: $selectedStatus',
+                style: AppTextStyles.body,
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
           Row(
             children: [
               Expanded(
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.close),
                   label: const Text('Снять на склад'),
-                  onPressed: () {},
+                  onPressed: () {
+                    ref.read(mechanicRequestStatusProvider.notifier).state =
+                        'Снять на склад';
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.card,
                     foregroundColor: AppColors.text,
@@ -121,7 +166,10 @@ class _MechanicRequestDetailScreenState extends State<MechanicRequestDetailScree
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.check),
                   label: const Text('На списание'),
-                  onPressed: () {},
+                  onPressed: () {
+                    ref.read(mechanicRequestStatusProvider.notifier).state =
+                        'На списание';
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.card,
                     foregroundColor: AppColors.text,
@@ -131,7 +179,21 @@ class _MechanicRequestDetailScreenState extends State<MechanicRequestDetailScree
             ],
           ),
           const SizedBox(height: 16),
-          const AppButton(label: 'Подать заявку'),
+          AppButton(
+            label: 'Подать заявку',
+            onPressed: () {
+              final category = ref.read(mechanicRequestCategoryProvider);
+              final detail = ref.read(mechanicRequestDetailProvider);
+              final quantity = ref.read(mechanicRequestQuantityProvider);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Заявка: $category / $detail / $quantity шт.',
+                  ),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

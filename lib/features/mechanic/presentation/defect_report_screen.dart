@@ -5,23 +5,30 @@ import 'package:digital_garage/shared/widgets/app_card.dart';
 import 'package:digital_garage/shared/widgets/role_bottom_nav.dart';
 import 'package:digital_garage/shared/widgets/role_scaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'mechanic_form_providers.dart';
 import 'mechanic_schedule_screen.dart';
 
-class DefectReportScreen extends StatefulWidget {
+class DefectReportScreen extends ConsumerStatefulWidget {
   const DefectReportScreen({super.key});
 
   @override
-  State<DefectReportScreen> createState() => _DefectReportScreenState();
+  ConsumerState<DefectReportScreen> createState() => _DefectReportScreenState();
 }
 
-class _DefectReportScreenState extends State<DefectReportScreen> {
+class _DefectReportScreenState extends ConsumerState<DefectReportScreen> {
   late TextEditingController _descriptionController;
 
   @override
   void initState() {
     super.initState();
-    _descriptionController = TextEditingController();
+    _descriptionController =
+        TextEditingController(text: ref.read(defectDescriptionProvider));
+    _descriptionController.addListener(() {
+      ref.read(defectDescriptionProvider.notifier).state =
+          _descriptionController.text;
+    });
   }
 
   @override
@@ -32,6 +39,8 @@ class _DefectReportScreenState extends State<DefectReportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final photoAttached = ref.watch(defectPhotoAttachedProvider);
+
     return RoleScaffold(
       userName: 'Азамат Рахимов',
       roleName: 'Механик',
@@ -73,12 +82,23 @@ class _DefectReportScreenState extends State<DefectReportScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.image_outlined, size: 40, color: AppColors.muted),
+                    Icon(
+                      photoAttached ? Icons.check_circle_outline : Icons.image_outlined,
+                      size: 40,
+                      color: photoAttached ? AppColors.success : AppColors.muted,
+                    ),
                     const SizedBox(height: 8),
+                    if (photoAttached)
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 8),
+                        child: Text('Фото прикреплено', style: AppTextStyles.caption),
+                      ),
                     ElevatedButton.icon(
-                      icon: const Icon(Icons.add_a_photo),
-                      label: const Text('Сделать фото'),
-                      onPressed: () {},
+                      icon: Icon(photoAttached ? Icons.refresh : Icons.add_a_photo),
+                      label: Text(photoAttached ? 'Заменить фото' : 'Сделать фото'),
+                      onPressed: () {
+                        ref.read(defectPhotoAttachedProvider.notifier).state = true;
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
@@ -104,7 +124,22 @@ class _DefectReportScreenState extends State<DefectReportScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          const AppButton(label: 'Отправить дефект'),
+          AppButton(
+            label: 'Отправить дефект',
+            onPressed: () {
+              final description = ref.read(defectDescriptionProvider);
+              final hasPhoto = ref.read(defectPhotoAttachedProvider);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    hasPhoto
+                        ? 'Дефект отправлен: ${description.isEmpty ? 'без описания' : description}'
+                        : 'Сначала добавьте фото дефекта',
+                  ),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
